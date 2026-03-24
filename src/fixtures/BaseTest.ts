@@ -12,6 +12,11 @@ import { HomePage } from '../pages/HomePage';
 import { CheckboxesPage } from '../pages/CheckboxesPage';
 import { DropdownPage } from '../pages/DropdownPage';
 import { SecureAreaPage } from '../pages/SecureAreaPage';
+import { SauceLoginPage } from '../pages/SauceLoginPage';
+import { InventoryPage } from '../pages/InventoryPage';
+import { CartPage } from '../pages/CartPage';
+import { CheckoutInfoPage } from '../pages/CheckoutInfoPage';
+import { OrderSummaryPage } from '../pages/OrderSummaryPage';
 
 /**
  * Extended test fixture with custom setup and teardown
@@ -24,6 +29,11 @@ export type BaseTestFixtures = {
   checkboxesPage: CheckboxesPage;
   dropdownPage: DropdownPage;
   secureAreaPage: SecureAreaPage;
+  sauceLoginPage: SauceLoginPage;
+  inventoryPage: InventoryPage;
+  cartPage: CartPage;
+  checkoutInfoPage: CheckoutInfoPage;
+  orderSummaryPage: OrderSummaryPage;
 };
 
 /**
@@ -89,6 +99,41 @@ export const test = base.extend<BaseTestFixtures>({
    */
   secureAreaPage: async ({ page }, use) => {
     await use(new SecureAreaPage(page));
+  },
+
+  /**
+   * SauceLoginPage fixture - saucedemo.com login page
+   */
+  sauceLoginPage: async ({ page }, use) => {
+    await use(new SauceLoginPage(page));
+  },
+
+  /**
+   * InventoryPage fixture - saucedemo.com product list
+   */
+  inventoryPage: async ({ page }, use) => {
+    await use(new InventoryPage(page));
+  },
+
+  /**
+   * CartPage fixture - saucedemo.com shopping cart
+   */
+  cartPage: async ({ page }, use) => {
+    await use(new CartPage(page));
+  },
+
+  /**
+   * CheckoutInfoPage fixture - saucedemo.com checkout step 1
+   */
+  checkoutInfoPage: async ({ page }, use) => {
+    await use(new CheckoutInfoPage(page));
+  },
+
+  /**
+   * OrderSummaryPage fixture - saucedemo.com checkout step 2
+   */
+  orderSummaryPage: async ({ page }, use) => {
+    await use(new OrderSummaryPage(page));
   },
 });
 
