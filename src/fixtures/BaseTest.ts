@@ -11,6 +11,7 @@ import { LoginPage } from '../pages/LoginPage';
 import { HomePage } from '../pages/HomePage';
 import { CheckboxesPage } from '../pages/CheckboxesPage';
 import { DropdownPage } from '../pages/DropdownPage';
+import { SecureAreaPage } from '../pages/SecureAreaPage';
 
 /**
  * Extended test fixture with custom setup and teardown
@@ -22,6 +23,7 @@ export type BaseTestFixtures = {
   homePage: HomePage;
   checkboxesPage: CheckboxesPage;
   dropdownPage: DropdownPage;
+  secureAreaPage: SecureAreaPage;
 };
 
 /**
@@ -80,6 +82,13 @@ export const test = base.extend<BaseTestFixtures>({
    */
   dropdownPage: async ({ page }, use) => {
     await use(new DropdownPage(page));
+  },
+
+  /**
+   * SecureAreaPage fixture - creates a SecureAreaPage instance for each test
+   */
+  secureAreaPage: async ({ page }, use) => {
+    await use(new SecureAreaPage(page));
   },
 });
 
