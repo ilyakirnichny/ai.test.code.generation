@@ -89,6 +89,17 @@ export class InventoryPage extends BasePage {
   }
 
   /**
+   * Clicks a product name to open its detail page.
+   * @param productName - Visible product name
+   */
+  public async openProductDetail(productName: string): Promise<void> {
+    this.logger.step(`Opening product detail: "${productName}"`);
+    await this.getProductCard(productName)
+      .locator('.inventory_item_name')
+      .click();
+  }
+
+  /**
    * Asserts that the "Add to cart" button for the given product becomes
    * "Remove" after being clicked — confirming the item was added.
    * @param productName - Visible product name

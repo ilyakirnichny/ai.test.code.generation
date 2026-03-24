@@ -17,6 +17,7 @@ import { InventoryPage } from '../pages/InventoryPage';
 import { CartPage } from '../pages/CartPage';
 import { CheckoutInfoPage } from '../pages/CheckoutInfoPage';
 import { OrderSummaryPage } from '../pages/OrderSummaryPage';
+import { ProductPage } from '../pages/ProductPage';
 
 /**
  * Extended test fixture with custom setup and teardown
@@ -34,6 +35,7 @@ export type BaseTestFixtures = {
   cartPage: CartPage;
   checkoutInfoPage: CheckoutInfoPage;
   orderSummaryPage: OrderSummaryPage;
+  productPage: ProductPage;
 };
 
 /**
@@ -134,6 +136,13 @@ export const test = base.extend<BaseTestFixtures>({
    */
   orderSummaryPage: async ({ page }, use) => {
     await use(new OrderSummaryPage(page));
+  },
+
+  /**
+   * ProductPage fixture - saucedemo.com product detail page
+   */
+  productPage: async ({ page }, use) => {
+    await use(new ProductPage(page));
   },
 });
 
