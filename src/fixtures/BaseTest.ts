@@ -10,6 +10,7 @@ import { Logger } from '../utils/logger';
 import { LoginPage } from '../pages/LoginPage';
 import { HomePage } from '../pages/HomePage';
 import { CheckboxesPage } from '../pages/CheckboxesPage';
+import { DropdownPage } from '../pages/DropdownPage';
 
 /**
  * Extended test fixture with custom setup and teardown
@@ -20,6 +21,7 @@ export type BaseTestFixtures = {
   loginPage: LoginPage;
   homePage: HomePage;
   checkboxesPage: CheckboxesPage;
+  dropdownPage: DropdownPage;
 };
 
 /**
@@ -71,6 +73,13 @@ export const test = base.extend<BaseTestFixtures>({
    */
   checkboxesPage: async ({ page }, use) => {
     await use(new CheckboxesPage(page));
+  },
+
+  /**
+   * DropdownPage fixture - creates a DropdownPage instance for each test
+   */
+  dropdownPage: async ({ page }, use) => {
+    await use(new DropdownPage(page));
   },
 });
 
