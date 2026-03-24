@@ -14,6 +14,7 @@
 
 import { Page, Locator, expect } from '@playwright/test';
 import { BasePage } from './BasePage';
+import { SortOption } from '../fixtures/searchTestData';
 
 export class InventoryPage extends BasePage {
   protected pageUrl = 'https://www.saucedemo.com/inventory.html';
@@ -22,11 +23,14 @@ export class InventoryPage extends BasePage {
   private readonly inventoryItems: Locator;
   // Page title — used to confirm the page is loaded
   private readonly pageTitle: Locator;
+  // Sort/filter dropdown — <select data-test="product-sort-container">
+  private readonly sortDropdown: Locator;
 
   constructor(page: Page) {
     super(page);
     this.inventoryItems = this.page.locator('.inventory_item');
     this.pageTitle      = this.page.locator('.title');
+    this.sortDropdown   = this.page.locator('[data-test="product-sort-container"]');
   }
 
   /**
@@ -94,5 +98,95 @@ export class InventoryPage extends BasePage {
     await expect(
       this.getProductCard(productName).locator('button[data-test^="remove"]')
     ).toBeVisible();
+  }
+
+  // ── Sort / Filter ──────────────────────────────────────────────────────────
+
+  /**
+   * Selects a sort option from the dropdown.
+   * Maps to applyFilter() in the exercise template.
+   * @param option - One of SortOption constants (e.g. SortOption.PRICE_LOW_HIGH)
+   */
+  public async applySort(option: SortOption): Promise<void> {
+    this.logger.step(`Applying sort: "${option}"`);
+    await this.waitForElement(this.sortDropdown);
+    await this.sortDropdown.selectOption(option);
+  }
+
+  // ── Collection helpers ─────────────────────────────────────────────────────
+
+  /**
+   * Returns the visible name of every product currently listed.
+   * Use this to assert ordering or filter results.
+   */
+  public async getAllProductNames(): Promise<string[]> {
+    return this.inventoryItems
+      .locator('.inventory_item_name')
+      .allInnerTexts();
+  }
+
+  /**
+   * Returns the price of every product as a number (strips '$').
+   * Use this to assert all prices satisfy a condition.
+   */
+  public async getAllPrices(): Promise<number[]> {
+    const texts = await this.inventoryItems
+      .locator('.inventory_item_price')
+      .allInnerTexts();
+    return texts.map(t => parseFloat(t.replace('$', '')));
+  }
+
+  /**
+   * Asserts that every listed product price is strictly below `maxPrice`.
+   * Implements the "assert for all items, not just one" requirement.
+   * @param maxPrice - Upper bound (exclusive)
+   */
+  public async assertAllPricesBelow(maxPrice: number): Promise<void> {
+    this.logger.step(`Asserting all prices are below $${maxPrice}`);
+    const prices = await this.getAllPrices();
+    for (const price of prices) {
+      expect(price, `Expected price $${price} to be below $${maxPrice}`).toBeLessThan(maxPrice);
+    }
+  }
+
+  /**
+   * Asserts that prices are sorted in ascending order (lowest → highest).
+   * Used to verify "Price (low to high)" sort was applied.
+   */
+  public async assertPricesSortedAscending(): Promise<void> {
+    this.logger.step('Asserting prices are sorted ascending (low to high)');
+    const prices = await this.getAllPrices();
+    for (let i = 0; i < prices.length - 1; i++) {
+      expect(
+        prices[i],
+        `Expected $${prices[i]} ≤ $${prices[i + 1]} at index ${i}`
+      ).toBeLessThanOrEqual(prices[i + 1]);
+    }
+  }
+
+  /**
+   * Asserts that prices are sorted in descending order (highest → lowest).
+   * Used to verify "Price (high to low)" sort was applied.
+   */
+  public async assertPricesSortedDescending(): Promise<void> {
+    this.logger.step('Asserting prices are sorted descending (high to low)');
+    const prices = await this.getAllPrices();
+    for (let i = 0; i < prices.length - 1; i++) {
+      expect(
+        prices[i],
+        `Expected $${prices[i]} ≥ $${prices[i + 1]} at index ${i}`
+      ).toBeGreaterThanOrEqual(prices[i + 1]);
+    }
+  }
+
+  /**
+   * Asserts that product names are listed in the expected order.
+   * Used to verify name-based sorts.
+   * @param expectedNames - Array of names in the expected display order
+   */
+  public async assertNamesOrderEqual(expectedNames: string[]): Promise<void> {
+    this.logger.step('Asserting product name order');
+    const actual = await this.getAllProductNames();
+    expect(actual).toEqual(expectedNames);
   }
 }
